@@ -5,7 +5,7 @@ var es = require('event-stream'),
 module.exports = function(opt){
   // clone options
   opt = opt ? clone(opt) : {};
-  if (!opt.splitter && opt.splitter !== "") opt.splitter = '\r\n';
+  if (typeof opt.splitter === 'undefined') opt.splitter = '\r\n';
 
   if (!opt.fileName) throw new Error("Missing fileName option for gulp-concat");
 
