@@ -23,7 +23,7 @@ module.exports = function(opt){
       return file.contents;
     });
     if (typeof opt.header !== 'undefined') {
-      contents.unshift(header);
+      contents.unshift(opt.header);
     }
     if (typeof opt.footer !== 'undefined') {
       contents.push(opt.footer);
