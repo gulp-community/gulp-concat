@@ -5,7 +5,7 @@ require('mocha');
 describe('gulp-concat', function() {
   describe('concat()', function() {
     it('should concat two files', function(done) {
-      var stream = concat({fileName: "test.js", splitter: ":"});
+      var stream = concat({fileName: "test.js", splitter: ":", header:"Yo", footer:"!"});
       var fakeFile = {
         path: "/home/contra/test/file.js",
         shortened: "file.js",
@@ -15,7 +15,7 @@ describe('gulp-concat', function() {
       var fakeFile2 = {
         path: "/home/contra/test/file2.js",
         shortened: "file2.js",
-        contents: new Buffer("doe")
+        contents: new Buffer("dog")
       };
 
       stream.on('data', function(newFile){
@@ -25,7 +25,7 @@ describe('gulp-concat', function() {
         should.exist(newFile.contents);
         newFile.path.should.equal("/home/contra/test/test.js");
         newFile.shortened.should.equal("test.js");
-        String(newFile.contents).should.equal("wadup:doe");
+        String(newFile.contents).should.equal("Yo:wadup:doe:!");
         done();
       });
       stream.write(fakeFile);
