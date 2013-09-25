@@ -23,7 +23,7 @@ describe('gulp-concat', function() {
         should.exist(newFile.path);
         should.exist(newFile.shortened);
         should.exist(newFile.contents);
-        newFile.path.should.equal("/home/contra/test/test.js");
+        newFile.path.replace(/\\/,'/').should.equal("/home/contra/test/test.js");
         newFile.shortened.should.equal("test.js");
         String(newFile.contents).should.equal("Yo:wadup:doe:!");
         done();
