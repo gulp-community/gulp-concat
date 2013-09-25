@@ -10,6 +10,7 @@ module.exports = function(opt){
   if (!opt.fileName) throw new Error("Missing fileName option for gulp-concat");
 
   var buffer = [];
+  
   function bufferContents(file){
     // clone the file so we arent mutating stuff
     buffer.push(clone(file));
@@ -18,9 +19,16 @@ module.exports = function(opt){
   function endStream(){
     if (buffer.length === 0) return this.emit('end');
 
-    var joinedContents = buffer.map(function(file){
+    var contents = buffer.map(function(file){
       return file.contents;
-    }).join(opt.splitter);
+    });
+    if (typeof opt.header !== 'undefined') {
+      contents.unshift(header);
+    }
+    if (typeof opt.footer !== 'undefined') {
+      contents.push(opt.footer);
+    }
+    var joinedContents = contents.join(opt.splitter);
 
     var joinedPath = path.join(path.dirname(buffer[0].path), opt.fileName);
 
