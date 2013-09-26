@@ -3,7 +3,6 @@ var es = require('event-stream'),
   path = require('path');
 
 module.exports = function(fileName){
-  // clone options
   if (!fileName) throw new Error("Missing fileName option for gulp-concat");
 
   var buffer = [];
