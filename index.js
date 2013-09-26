@@ -2,12 +2,9 @@ var es = require('event-stream'),
   clone = require('clone'),
   path = require('path');
 
-module.exports = function(opt){
+module.exports = function(fileName){
   // clone options
-  opt = opt ? clone(opt) : {};
-  if (!opt.splitter) opt.splitter = '\r\n';
-
-  if (!opt.fileName) throw new Error("Missing fileName option for gulp-concat");
+  if (!fileName) throw new Error("Missing fileName option for gulp-concat");
 
   var buffer = [];
   function bufferContents(file){
@@ -20,12 +17,12 @@ module.exports = function(opt){
 
     var joinedContents = buffer.map(function(file){
       return file.contents;
-    }).join(opt.splitter);
+    }).join('');
 
-    var joinedPath = path.join(path.dirname(buffer[0].path), opt.fileName);
+    var joinedPath = path.join(path.dirname(buffer[0].path), fileName);
 
     var joinedFile = {
-      shortened: opt.fileName,
+      shortened: fileName,
       path: joinedPath,
       contents: joinedContents
     };

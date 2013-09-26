@@ -23,14 +23,10 @@ var concat = require('gulp-concat');
 
 gulp.task('scripts', function() {
   gulp.files('./lib/*.js')
-    .pipe(concat({fileName: "all.js"}))
+    .pipe(concat("all.js"))
     .pipe(gulp.folder('./dist/'))
 });
 ```
-
-## Options
-
-You can pass in a splitter option which defaults to `\r\n`. fileName is mandatory.
 
 ## LICENSE
 
