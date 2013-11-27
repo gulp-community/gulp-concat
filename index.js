@@ -1,5 +1,4 @@
 var es = require('event-stream'),
-  clone = require('clone'),
   path = require('path');
 
 module.exports = function(fileName){
@@ -8,7 +7,7 @@ module.exports = function(fileName){
   var buffer = [];
   function bufferContents(file){
     // clone the file so we arent mutating stuff
-    buffer.push(clone(file));
+    buffer.push(file);
   }
 
   function endStream(){
