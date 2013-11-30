@@ -1,15 +1,13 @@
 var es = require('event-stream'),
-  clone = require('clone'),
   path = require('path');
 
 module.exports = function(fileName){
-  // clone options
   if (!fileName) throw new Error("Missing fileName option for gulp-concat");
 
   var buffer = [];
   function bufferContents(file){
     // clone the file so we arent mutating stuff
-    buffer.push(clone(file));
+    buffer.push(file);
   }
 
   function endStream(){
