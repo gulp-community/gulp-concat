@@ -1,7 +1,7 @@
 {
    "name":"gulp-concat",
    "description":"Concatenates files",
-   "version":"1.1.0",
+   "version":"2.0.0",
    "homepage":"http://github.com/wearefractal/gulp-concat",
    "repository":"git://github.com/wearefractal/gulp-concat.git",
    "author":"Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
@@ -9,11 +9,16 @@
    "keywords":["gulpplugin"],
 
    "dependencies":{
-      "event-stream":"*"
+      "event-stream":"*",
+      "gulp-util":"~1.2.0"
+   },
+   "peerDependencies":{
+      "gulp":"~3.0.0"
    },
    "devDependencies":{
       "mocha":"*",
-      "should":"*"
+      "should":"*",
+      "gulp":"~3.0.0"
    },
    "scripts":{
       "test":"mocha"

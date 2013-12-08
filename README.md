@@ -28,6 +28,8 @@ gulp.task('scripts', function() {
 });
 ```
 
+This will concat files by a newline. It will take the base directory from the first file that passes through it.
+
 ## LICENSE
 
 (MIT License)

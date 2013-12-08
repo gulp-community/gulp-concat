@@ -1,5 +1,6 @@
-var es = require('event-stream'),
-  path = require('path');
+var es = require('event-stream');
+var path = require('path');
+var gutil = require('gulp-util');
 
 module.exports = function(fileName){
   if (!fileName) throw new Error("Missing fileName option for gulp-concat");
@@ -15,15 +16,16 @@ module.exports = function(fileName){
 
     var joinedContents = buffer.map(function(file){
       return file.contents;
-    }).join('');
+    }).join('\r\n');
 
-    var joinedPath = path.join(path.dirname(buffer[0].path), fileName);
+    var joinedPath = path.join(buffer[0].base, fileName);
 
-    var joinedFile = {
-      shortened: fileName,
+    var joinedFile = new gutil.File({
+      cwd: buffer[0].cwd,
+      base: buffer[0].base,
       path: joinedPath,
       contents: joinedContents
-    };
+    });
 
     this.emit('data', joinedFile);
     this.emit('end');
