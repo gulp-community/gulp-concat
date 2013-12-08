@@ -22,9 +22,9 @@
 var concat = require('gulp-concat');
 
 gulp.task('scripts', function() {
-  gulp.files('./lib/*.js')
+  gulp.src('./lib/*.js')
     .pipe(concat("all.js"))
-    .pipe(gulp.folder('./dist/'))
+    .pipe(gulp.dest('./dist/'))
 });
 ```
 
