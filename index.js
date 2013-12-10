@@ -1,10 +1,13 @@
 var es = require('event-stream');
+var os = require('os');
 var path = require('path');
 var gutil = require('gulp-util');
 
-module.exports = function(fileName){
+module.exports = function(fileName, opt){
   if (!fileName) throw new Error("Missing fileName option for gulp-concat");
-
+  if (!opt) opt = {};
+  if (!opt.newLine) opt.newLine = os.EOL;
+  
   var buffer = [];
   function bufferContents(file){
     // clone the file so we arent mutating stuff
@@ -16,7 +19,7 @@ module.exports = function(fileName){
 
     var joinedContents = buffer.map(function(file){
       return file.contents;
-    }).join('\r\n');
+    }).join(opt.newLine);
 
     var joinedPath = path.join(buffer[0].base, fileName);
 

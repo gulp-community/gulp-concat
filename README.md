@@ -28,7 +28,9 @@ gulp.task('scripts', function() {
 });
 ```
 
-This will concat files by a newline. It will take the base directory from the first file that passes through it.
+This will concat files by your operating systems newLine. It will take the base directory from the first file that passes through it.
+
+To change the newLine simply pass an object as the second argument to concat with newLine being whatever (\r\n if you want to support any OS to look at it)
 
 ## LICENSE
 
