@@ -27,7 +27,7 @@ module.exports = function(fileName, opt){
       cwd: buffer[0].cwd,
       base: buffer[0].base,
       path: joinedPath,
-      contents: joinedContents
+      contents: new Buffer(joinedContents)
     });
 
     this.emit('data', joinedFile);
