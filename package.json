@@ -1,7 +1,7 @@
 {
   "name": "gulp-concat",
   "description": "Concatenates files",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "homepage": "http://github.com/wearefractal/gulp-concat",
   "repository": "git://github.com/wearefractal/gulp-concat.git",
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",

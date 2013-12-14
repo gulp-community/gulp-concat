@@ -2,6 +2,7 @@ var concat = require('../');
 var should = require('should');
 var os = require('os');
 var File = require('gulp-util').File;
+var Buffer = require('buffer').Buffer;
 require('mocha');
 
 describe('gulp-concat', function() {
@@ -30,6 +31,7 @@ describe('gulp-concat', function() {
         newFile.path.should.equal("/home/contra/test/test.js");
         newFile.relative.should.equal("test.js");
         String(newFile.contents).should.equal("wadup"+os.EOL+"doe");
+        Buffer.isBuffer(newFile.contents).should.equal(true);
         done();
       });
       stream.write(fakeFile);
@@ -61,6 +63,7 @@ describe('gulp-concat', function() {
         newFile.path.should.equal("/home/contra/test/test.js");
         newFile.relative.should.equal("test.js");
         String(newFile.contents).should.equal("wadup\r\ndoe");
+        Buffer.isBuffer(newFile.contents).should.equal(true);
         done();
       });
       stream.write(fakeFile);
