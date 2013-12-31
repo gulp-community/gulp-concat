@@ -7,7 +7,7 @@ require('mocha');
 
 describe('gulp-concat', function() {
   describe('concat()', function() {
-    it('should concat two files by os.EOL', function(done) {
+    it('should concat two files', function(done) {
       var stream = concat("test.js");
       var fakeFile = new File({
         cwd: "/home/contra/",
@@ -30,7 +30,7 @@ describe('gulp-concat', function() {
         should.exist(newFile.contents);
         newFile.path.should.equal("/home/contra/test/test.js");
         newFile.relative.should.equal("test.js");
-        String(newFile.contents).should.equal("wadup"+os.EOL+"doe");
+        String(newFile.contents).should.equal("wadup\ndoe");
         Buffer.isBuffer(newFile.contents).should.equal(true);
         done();
       });
