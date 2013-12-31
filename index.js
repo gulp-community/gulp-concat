@@ -6,11 +6,15 @@ var gutil = require('gulp-util');
 module.exports = function(fileName, opt){
   if (!fileName) throw new Error("Missing fileName option for gulp-concat");
   if (!opt) opt = {};
-  if (!opt.newLine) opt.newLine = os.EOL;
+  if (!opt.newLine) opt.newLine = gutil.linefeed;
   
   var buffer = [];
   function bufferContents(file){
-    // clone the file so we arent mutating stuff
+    if (file.isNull()) return; // ignore
+    if (file.isStream()) return cb(new Error("gulp-concat: Streaming not supported"));
+
+    var str = file.contents.toString('utf8');
+
     buffer.push(file);
   }
 
@@ -18,7 +22,7 @@ module.exports = function(fileName, opt){
     if (buffer.length === 0) return this.emit('end');
 
     var joinedContents = buffer.map(function(file){
-      return file.contents;
+      return file.contents.toString('utf8');
     }).join(opt.newLine);
 
     var joinedPath = path.join(buffer[0].base, fileName);
