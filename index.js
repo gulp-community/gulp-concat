@@ -1,4 +1,4 @@
-var es = require('event-stream');
+var through = require('through');
 var os = require('os');
 var path = require('path');
 var gutil = require('gulp-util');
@@ -7,7 +7,7 @@ module.exports = function(fileName, opt){
   if (!fileName) throw new Error("Missing fileName option for gulp-concat");
   if (!opt) opt = {};
   if (!opt.newLine) opt.newLine = gutil.linefeed;
-  
+
   var buffer = [];
   var firstFile = null;
 
@@ -38,5 +38,5 @@ module.exports = function(fileName, opt){
     this.emit('end');
   }
 
-  return es.through(bufferContents, endStream);
+  return through(bufferContents, endStream);
 };
