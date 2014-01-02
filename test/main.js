@@ -1,6 +1,7 @@
 var concat = require('../');
 var should = require('should');
 var os = require('os');
+var path = require('path');
 var File = require('gulp-util').File;
 var Buffer = require('buffer').Buffer;
 require('mocha');
@@ -28,7 +29,11 @@ describe('gulp-concat', function() {
         should.exist(newFile.path);
         should.exist(newFile.relative);
         should.exist(newFile.contents);
-        newFile.path.should.equal("/home/contra/test/test.js");
+
+        var newFilePath = path.resolve(newFile.path);
+        var expectedFilePath = path.resolve("/home/contra/test/test.js");
+        newFilePath.should.equal(expectedFilePath);
+
         newFile.relative.should.equal("test.js");
         String(newFile.contents).should.equal("wadup\ndoe");
         Buffer.isBuffer(newFile.contents).should.equal(true);
@@ -60,7 +65,11 @@ describe('gulp-concat', function() {
         should.exist(newFile.path);
         should.exist(newFile.relative);
         should.exist(newFile.contents);
-        newFile.path.should.equal("/home/contra/test/test.js");
+
+        var newFilePath = path.resolve(newFile.path);
+        var expectedFilePath = path.resolve("/home/contra/test/test.js");
+        newFilePath.should.equal(expectedFilePath);
+
         newFile.relative.should.equal("test.js");
         String(newFile.contents).should.equal("wadup\r\ndoe");
         Buffer.isBuffer(newFile.contents).should.equal(true);
