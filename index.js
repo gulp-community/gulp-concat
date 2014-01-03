@@ -1,4 +1,5 @@
 var through = require('through');
+var PassThrough = require('stream').PassThrough;
 var os = require('os');
 var path = require('path');
 var gutil = require('gulp-util');
@@ -10,31 +11,43 @@ module.exports = function(fileName, opt){
   if (!opt) opt = {};
   if (!opt.newLine) opt.newLine = gutil.linefeed;
 
-  var buffer = [];
-  var firstFile = null;
+  var joinedFile = new File({
+    contents: null
+  });
 
   function bufferContents(file){
     if (file.isNull()) return; // ignore
-    if (file.isStream()) return cb(new PluginError('gulp-concat',  'Streaming not supported'));
 
-    if (!firstFile) firstFile = file;
+    if (file.isStream()) {
+      if (!joinedFile.contents) {
+        joinedFile.cwd = file.cwd;
+        joinedFile.base = file.base;
+        joinedFile.path = path.join(file.base, fileName);
+        joinedFile.contents = new PassThrough();
+        file.contents.pipe(joinedFile.contents, {end: false});
+      } else {
+        joinedFile.contents.write(Buffer(opt.newLine));
+        file.contents.pipe(joinedFile.contents, {end: false});
+      }
+      return;
+    }
 
-    buffer.push(file.contents.toString('utf8'));
+    if (!joinedFile.contents) {
+      joinedFile.cwd = file.cwd;
+      joinedFile.base = file.base;
+      joinedFile.path = path.join(file.base, fileName);
+      joinedFile.contents = file.contents;
+    } else {
+      joinedFile.contents = Buffer.concat([
+        joinedFile.contents,Buffer(opt.newLine),file.contents
+      ], joinedFile.contents.length + file.contents.length
+        + Buffer(opt.newLine).length);
+    }
+
   }
 
   function endStream(){
-    if (buffer.length === 0) return this.emit('end');
-
-    var joinedContents = buffer.join(opt.newLine);
-
-    var joinedPath = path.join(firstFile.base, fileName);
-
-    var joinedFile = new File({
-      cwd: firstFile.cwd,
-      base: firstFile.base,
-      path: joinedPath,
-      contents: new Buffer(joinedContents)
-    });
+    if (!joinedFile.contents) return this.emit('end');
 
     this.emit('data', joinedFile);
     this.emit('end');
