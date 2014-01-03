@@ -15,7 +15,7 @@ module.exports = function(fileName, opt){
 
   function bufferContents(file){
     if (file.isNull()) return; // ignore
-    if (file.isStream()) return cb(new PluginError('gulp-concat',  'Streaming not supported'));
+    if (file.isStream()) return this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
 
     if (!firstFile) firstFile = file;
 
