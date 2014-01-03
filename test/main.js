@@ -130,6 +130,51 @@ describe('gulp-concat', function() {
       stream.end();
     });
 
+    it('should concat two files with nested data income', function(done) {
+      var stream = concat("test.js");
+      var fakeFile = new File({
+        cwd: "/home/contra/",
+        base: "/home/contra/test",
+        path: "/home/contra/test/file.js"
+      });
+      fakeFile.contents = new PassThrough();
+
+      var fakeFile2 = new File({
+        cwd: "/home/contra/",
+        base: "/home/contra/test",
+        path: "/home/contra/test/file2.js",
+        contents: new Buffer("doe")
+      });
+      fakeFile2.contents = new PassThrough();
+
+      stream.on('data', function(newFile){
+        should.exist(newFile);
+        should.exist(newFile.path);
+        should.exist(newFile.relative);
+        should.exist(newFile.contents);
+
+        var newFilePath = path.resolve(newFile.path);
+        var expectedFilePath = path.resolve("/home/contra/test/test.js");
+        newFilePath.should.equal(expectedFilePath);
+
+        newFile.relative.should.equal("test.js");
+        newFile.contents.pipe(es.wait(function(err, data) {
+          data.should.equal("wadup\r\ndoe");
+        }));
+        (newFile.contents instanceof PassThrough).should.equal(true);
+        done();
+      });
+      stream.write(fakeFile);
+      stream.write(fakeFile2);
+      stream.end();
+      fakeFile2.contents.write('d');
+      fakeFile.contents.write('wa');
+      fakeFile.contents.write('dup');
+      fakeFile.contents.end();
+      fakeFile2.contents.write('oe');
+      fakeFile2.contents.end();
+    });
+
     it('should concat two files by custom EOL', function(done) {
       var stream = concat("test.js", {newLine: '\r\n'});
       var fakeFile = new File({
