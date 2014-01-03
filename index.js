@@ -38,10 +38,10 @@ module.exports = function(fileName, opt){
       joinedFile.path = path.join(file.base, fileName);
       joinedFile.contents = file.contents;
     } else {
-      joinedFile.contents = Buffer.concat([
-        joinedFile.contents,Buffer(opt.newLine),file.contents
-      ], joinedFile.contents.length + file.contents.length
-        + Buffer(opt.newLine).length);
+      var bufLength = joinedFile.contents.length + file.contents.length
+        + Buffer(opt.newLine).length;
+      var bufs = [joinedFile.contents, Buffer(opt.newLine), file.contents];
+      joinedFile.contents = Buffer.concat(bufs, bufLength);
     }
 
   }
