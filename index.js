@@ -15,6 +15,8 @@ module.exports = function(fileName, opt){
     contents: null
   });
 
+  var streams = [];
+
   function bufferContents(file){
     if (file.isNull()) return; // ignore
 
@@ -24,11 +26,13 @@ module.exports = function(fileName, opt){
         joinedFile.base = file.base;
         joinedFile.path = path.join(file.base, fileName);
         joinedFile.contents = new PassThrough();
-        file.contents.pipe(joinedFile.contents, {end: false});
-      } else {
-        joinedFile.contents.write(Buffer(opt.newLine));
-        file.contents.pipe(joinedFile.contents, {end: false});
       }
+      if(streams.length) {
+        streams.push(new PassThrough());
+        streams[streams.length-1].write(Buffer(opt.newLine));
+        streams[streams.length-1].end();
+      }
+      streams.push(file.contents);
       return;
     }
 
@@ -48,6 +52,19 @@ module.exports = function(fileName, opt){
 
   function endStream(){
     if (!joinedFile.contents) return this.emit('end');
+
+    if (joinedFile.isStream()) {
+      function pipeNextStream() {
+        if(!streams.length) {
+          joinedFile.contents.end();
+          return;
+        }
+        var stream = streams.shift();
+        stream.pipe(joinedFile.contents, {end: false});
+        stream.on('end', pipeNextStream);
+      }
+      pipeNextStream();
+    }
 
     this.emit('data', joinedFile);
     this.emit('end');
