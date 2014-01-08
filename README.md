@@ -32,6 +32,22 @@ This will concat files by your operating systems newLine. It will take the base 
 
 To change the newLine simply pass an object as the second argument to concat with newLine being whatever (\r\n if you want to support any OS to look at it)
 
+In order to output to multiple files the following syntax can be used:
+
+```javascript
+var concat = require('gulp-concat');
+
+gulp.task('scripts', function() {
+  gulp.src('./lib/*.js')
+    .pipe(concat({
+    	"part1.js": ['a.js','b.js'],
+    	"part2.js": ['a.js','c.js']
+    }))
+    .pipe(gulp.dest('./dist/'))
+});
+```
+Which will result in part1.js containing contents of a and b (in that order).
+
 ## LICENSE
 
 (MIT License)

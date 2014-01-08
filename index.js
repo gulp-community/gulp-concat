@@ -6,39 +6,66 @@ var PluginError = gutil.PluginError;
 var File = gutil.File;
 
 module.exports = function(fileName, opt){
-  if (!fileName) throw new PluginError('gulp-concat',  'Missing fileName option for gulp-concat');
-  if (!opt) opt = {};
-  if (!opt.newLine) opt.newLine = gutil.linefeed;
+    if (!fileName) throw new PluginError('gulp-concat',  'Missing fileName option for gulp-concat');
+    if (!opt) opt = {};
+    if (!opt.newLine) opt.newLine = gutil.linefeed;
 
-  var buffer = [];
-  var firstFile = null;
+    var buffers = {},
+        outputs,
+        firstFile;
 
-  function bufferContents(file){
-    if (file.isNull()) return; // ignore
-    if (file.isStream()) return this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
+    // backwards compatibility
+    if(typeof(fileName) === 'string'){
+        outputs = {
+            fileName: null
+        }
+    }
+    else{
+        outputs = fileName;
+    }
 
-    if (!firstFile) firstFile = file;
+    function bufferContents(file){
+        if (file.isNull()) return; // ignore
+        if (file.isStream()) return this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
 
-    buffer.push(file.contents.toString('utf8'));
-  }
+        if (!firstFile) firstFile = file;
 
-  function endStream(){
-    if (buffer.length === 0) return this.emit('end');
+        var streamFile = file.path.substr(file.base.length),
+            index // ensure correct order;
+        for(var output in outputs){
+            // nul or empty take all or is in output
+            var includedItems = outputs[output];
+            if(!includedItems || includedItems.length === 0 || ((index = includedItems.indexOf(streamFile)) > -1)){
+                // if no buffer, create it
+                if(!buffers[output]) buffers[output] = [];
 
-    var joinedContents = buffer.join(opt.newLine);
+                // if an index otherwise jush push it on the buffer
+                if(index !== null){
+                    buffers[output][index] = file.contents.toString('utf8');
+                }
+                else{
+                    buffers[output].push(file.contents.toString('utf8'));
+                }
+            }
+        }
+    }
 
-    var joinedPath = path.join(firstFile.base, fileName);
+    function endStream(){
+        for(var fileName in buffers){
+            var joinedContents = buffers[fileName].join(opt.newLine);
 
-    var joinedFile = new File({
-      cwd: firstFile.cwd,
-      base: firstFile.base,
-      path: joinedPath,
-      contents: new Buffer(joinedContents)
-    });
+            var joinedPath = path.join(firstFile.base, fileName);
 
-    this.emit('data', joinedFile);
-    this.emit('end');
-  }
+            var joinedFile = new File({
+                cwd: firstFile.cwd,
+                base: firstFile.base,
+                path: joinedPath,
+                contents: new Buffer(joinedContents)
+            });
+            this.emit('data', joinedFile);
+        }
+        this.emit('end');
+    }
 
-  return through(bufferContents, endStream);
+    return through(bufferContents, endStream);
 };
