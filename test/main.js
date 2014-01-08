@@ -4,7 +4,7 @@ var os = require('os');
 var path = require('path');
 var File = require('gulp-util').File;
 var Buffer = require('buffer').Buffer;
-var PassThrough = require('stream').PassThrough;
+var Stream = require('stream');
 var es = require('event-stream');
 var gutil = require('gulp-util');
 require('mocha');
@@ -92,7 +92,7 @@ describe('gulp-concat', function() {
         cwd: "/home/contra/",
         base: "/home/contra/test",
         path: "/home/contra/test/file.js",
-        contents: new PassThrough()
+        contents: new Stream.PassThrough()
       });
       fakeFile.contents.write('wa');
       fakeFile.contents.write('dup');
@@ -102,7 +102,7 @@ describe('gulp-concat', function() {
         cwd: "/home/contra/",
         base: "/home/contra/test",
         path: "/home/contra/test/file2.js",
-        contents: new PassThrough()
+        contents: new Stream.PassThrough()
       });
       fakeFile2.contents.write('d');
       fakeFile2.contents.write('oe');
@@ -123,7 +123,7 @@ describe('gulp-concat', function() {
           data.should.equal("wadup"+gutil.linefeed+"doe");
           done();
         }));
-        (newFile.contents instanceof PassThrough).should.equal(true);
+        (newFile.contents instanceof Stream.PassThrough).should.equal(true);
       });
       stream.write(fakeFile);
       stream.write(fakeFile2);
@@ -136,14 +136,14 @@ describe('gulp-concat', function() {
         cwd: "/home/contra/",
         base: "/home/contra/test",
         path: "/home/contra/test/file.js",
-        contents: new PassThrough()
+        contents: new Stream.PassThrough()
       });
 
       var fakeFile2 = new File({
         cwd: "/home/contra/",
         base: "/home/contra/test",
         path: "/home/contra/test/file2.js",
-        contents: new PassThrough()
+        contents: new Stream.PassThrough()
       });
 
       var n = 2;
@@ -171,7 +171,7 @@ describe('gulp-concat', function() {
           data.should.equal(string);
           done();
         }));
-        (newFile.contents instanceof PassThrough).should.equal(true);
+        (newFile.contents instanceof Stream.PassThrough).should.equal(true);
       });
       stream.write(fakeFile);
       stream.write(fakeFile2);
@@ -201,7 +201,7 @@ describe('gulp-concat', function() {
         cwd: "/home/contra/",
         base: "/home/contra/test",
         path: "/home/contra/test/file.js",
-        contents: new PassThrough()
+        contents: new Stream.PassThrough()
       });
       fakeFile.contents.write('wa');
       fakeFile.contents.write('dup');
@@ -211,7 +211,7 @@ describe('gulp-concat', function() {
         cwd: "/home/contra/",
         base: "/home/contra/test",
         path: "/home/contra/test/file2.js",
-        contents: new PassThrough()
+        contents: new Stream.PassThrough()
       });
       fakeFile2.contents.write('d');
       fakeFile2.contents.write('oe');
@@ -232,7 +232,7 @@ describe('gulp-concat', function() {
           data.should.equal("wadup\r\ndoe");
           done();
         }));
-        (newFile.contents instanceof PassThrough).should.equal(true);
+        (newFile.contents instanceof Stream.PassThrough).should.equal(true);
       });
       stream.write(fakeFile);
       stream.write(fakeFile2);
