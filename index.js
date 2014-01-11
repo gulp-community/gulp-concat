@@ -5,6 +5,7 @@ var path = require('path');
 var gutil = require('gulp-util');
 var PluginError = gutil.PluginError;
 var File = gutil.File;
+var StreamQueue = require('streamqueue');
 
 module.exports = function(fileName, opt){
   if (!fileName) throw new PluginError('gulp-concat',  'Missing fileName option for gulp-concat');
@@ -15,8 +16,6 @@ module.exports = function(fileName, opt){
     contents: null
   });
 
-  var streams = [];
-
   function bufferContents(file){
     if (file.isNull()) return; // ignore
 
@@ -25,14 +24,15 @@ module.exports = function(fileName, opt){
         joinedFile.cwd = file.cwd;
         joinedFile.base = file.base;
         joinedFile.path = path.join(file.base, fileName);
-        joinedFile.contents = new PassThrough();
+        joinedFile.contents = new StreamQueue();
+        joinedFile.contents.queue(file.contents);
+      } else {
+        var stream = new PassThrough();
+        stream.write(Buffer(opt.newLine));
+        stream.end();
+        joinedFile.contents.queue(stream);
+        joinedFile.contents.queue(file.contents);
       }
-      if(streams.length) {
-        streams.push(new PassThrough());
-        streams[streams.length-1].write(Buffer(opt.newLine));
-        streams[streams.length-1].end();
-      }
-      streams.push(file.contents);
       return;
     }
 
@@ -54,16 +54,7 @@ module.exports = function(fileName, opt){
     if (!joinedFile.contents) return this.emit('end');
 
     if (joinedFile.isStream()) {
-      function pipeNextStream() {
-        if(!streams.length) {
-          joinedFile.contents.end();
-          return;
-        }
-        var stream = streams.shift();
-        stream.pipe(joinedFile.contents, {end: false});
-        stream.on('end', pipeNextStream);
-      }
-      pipeNextStream();
+        joinedFile.contents.end();
     }
 
     this.emit('data', joinedFile);
