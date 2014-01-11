@@ -54,7 +54,7 @@ module.exports = function(fileName, opt){
     if (!joinedFile.contents) return this.emit('end');
 
     if (joinedFile.isStream()) {
-        joinedFile.contents.end();
+        joinedFile.contents.done();
     }
 
     this.emit('data', joinedFile);
