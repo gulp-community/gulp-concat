@@ -30,6 +30,18 @@ gulp.task('scripts', function() {
 
 This will concat files by your operating systems newLine. It will take the base directory from the first file that passes through it.
 
+Files will be concatenated in the order that they are specified in the `gulp.src` function. For example, to concat `./lib/file3.js`, `./lib/file1.js` and `./lib/file2.js` in that order, the following code will create a task to do that:
+
+```javascript
+var concat = require('gulp-concat');
+
+gulp.task('scripts', function() {
+  gulp.src(['./lib/file3.js', './lib/file1.js', './lib/file2.js'])
+    .pipe(concat("all.js"))
+    .pipe(gulp.dest('./dist/'))
+});
+```
+
 To change the newLine simply pass an object as the second argument to concat with newLine being whatever (\r\n if you want to support any OS to look at it)
 
 ## LICENSE
