@@ -44,6 +44,13 @@ gulp.task('scripts', function() {
 
 To change the newLine simply pass an object as the second argument to concat with newLine being whatever (\r\n if you want to support any OS to look at it)
 
+For instance:
+
+```
+.pipe(concat('main.js', {newLine: ';'}))
+```
+
+
 ## LICENSE
 
 (MIT License)
