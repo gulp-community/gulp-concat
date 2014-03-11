@@ -4,10 +4,12 @@ var path = require('path');
 var gutil = require('gulp-util');
 var PluginError = gutil.PluginError;
 var File = gutil.File;
+var Buffer = require('buffer').Buffer;
 
 module.exports = function(fileName, opt){
   if (!fileName) throw new PluginError('gulp-concat',  'Missing fileName option for gulp-concat');
   if (!opt) opt = {};
+  if (!opt.binary) opt.binary = false;
   if (!opt.newLine) opt.newLine = gutil.linefeed;
 
   var buffer = [];
@@ -19,13 +21,23 @@ module.exports = function(fileName, opt){
 
     if (!firstFile) firstFile = file;
 
-    buffer.push(file.contents.toString('utf8'));
+    if (!opt.binary) {
+      buffer.push(file.contents.toString('utf8'));
+    } else {
+      buffer.push(file.contents);
+    };
   }
 
   function endStream(){
     if (buffer.length === 0) return this.emit('end');
 
-    var joinedContents = buffer.join(opt.newLine);
+    var joinedContents;
+
+    if (!opt.binary) {
+      joinedContents = buffer.join(opt.newLine);
+    } else {
+      joinedContents = Buffer.concat(buffer);
+    };
 
     var joinedPath = path.join(firstFile.base, fileName);
 
