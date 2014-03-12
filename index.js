@@ -4,11 +4,13 @@ var path = require('path');
 var gutil = require('gulp-util');
 var PluginError = gutil.PluginError;
 var File = gutil.File;
+var Buffer = require('buffer').Buffer;
 
 module.exports = function(fileName, opt){
-  if (!fileName) throw new PluginError('gulp-concat',  'Missing fileName option for gulp-concat');
+  if (!fileName) throw new PluginError('gulp-concat', 'Missing fileName option for gulp-concat');
   if (!opt) opt = {};
-  if (!opt.newLine) opt.newLine = gutil.linefeed;
+  // to preserve existing |undefined| behaviour and to introduce |newLine: ""| for binaries
+  if (typeof opt.newLine === 'undefined') opt.newLine = gutil.linefeed;
 
   var buffer = [];
   var firstFile = null;
@@ -19,13 +21,26 @@ module.exports = function(fileName, opt){
 
     if (!firstFile) firstFile = file;
 
-    buffer.push(file.contents.toString('utf8'));
+    buffer.push(file.contents);
   }
 
   function endStream(){
     if (buffer.length === 0) return this.emit('end');
 
-    var joinedContents = buffer.join(opt.newLine);
+    var joinedBuffer;
+
+    if (!opt.newLine) {
+      joinedBuffer = buffer;
+    } else {
+      joinedBuffer = [];
+      var newLineBuffer = new Buffer(opt.newLine);
+      buffer.forEach(function(b, i) {
+        if (i) joinedBuffer.push(newLineBuffer);
+        joinedBuffer.push(b);
+      });
+    };
+
+    var joinedContents = Buffer.concat(joinedBuffer);
 
     var joinedPath = path.join(firstFile.base, fileName);
 
@@ -33,7 +48,7 @@ module.exports = function(fileName, opt){
       cwd: firstFile.cwd,
       base: firstFile.base,
       path: joinedPath,
-      contents: new Buffer(joinedContents)
+      contents: joinedContents
     });
 
     this.emit('data', joinedFile);
