@@ -10,7 +10,7 @@ module.exports = function(fileName, opt){
   if (!fileName) throw new PluginError('gulp-concat', 'Missing fileName option for gulp-concat');
   if (!opt) opt = {};
   // to preserve existing |undefined| behaviour and to introduce |newLine: ""| for binaries
-  if (typeof opt.newLine === 'undefined') opt.newLine = gutil.linefeed;
+  if (typeof opt.newLine !== 'string') opt.newLine = gutil.linefeed;
 
   var buffer = [];
   var firstFile = null;
