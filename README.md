@@ -50,6 +50,16 @@ For instance:
 .pipe(concat('main.js', {newLine: ';'}))
 ```
 
+### Options
+
+`options.sourceMap`
+Enable source map generator.
+
+`options.sourcesContent`
+An optional flag that tells the source map generator whether or not to include all original sources in the map.
+
+`options.sourceRoot`
+An optional root for all relative URLs in the source map.
 
 ## LICENSE
 
