@@ -8,17 +8,27 @@ require('mocha');
 
 describe('gulp-concat', function() {
   describe('concat()', function() {
-    testFiles(concat('test.js'), ['wadup'], 'wadup');
-    testFiles(concat('test.js', {newLine: '\r\n'}), ['wadup'], 'wadup');
-    testFiles(concat('test.js', {newLine: ''}), ['wadup'], 'wadup');
+    var input;
 
-    testFiles(concat('test.js'), ['wadup', 'doe'], 'wadup\ndoe');
-    testFiles(concat('test.js', {newLine: '\r\n'}), ['wadup', 'doe'], 'wadup\r\ndoe');
-    testFiles(concat('test.js', {newLine: ''}), ['wadup', 'doe'], 'wadupdoe');
+    input = ['wadup'];
+    testFiles(concat('test.js'), input, 'wadup');
+    testFiles(concat('test.js', {newLine: '\r\n'}), input, 'wadup');
+    testFiles(concat('test.js', {newLine: ''}), input, 'wadup');
 
-    testFiles(concat('test.js'), ['wadup', 'doe', 'hey'], 'wadup\ndoe\nhey');
-    testFiles(concat('test.js', {newLine: '\r\n'}), ['wadup', 'doe', 'hey'], 'wadup\r\ndoe\r\nhey');
-    testFiles(concat('test.js', {newLine: ''}), ['wadup', 'doe', 'hey'], 'wadupdoehey');
+    input = ['wadup', 'doe'];
+    testFiles(concat('test.js'), input, 'wadup\ndoe');
+    testFiles(concat('test.js', {newLine: '\r\n'}), input, 'wadup\r\ndoe');
+    testFiles(concat('test.js', {newLine: ''}), input, 'wadupdoe');
+
+    input = ['wadup', 'doe', 'hey'];
+    testFiles(concat('test.js'), input, 'wadup\ndoe\nhey');
+    testFiles(concat('test.js', {newLine: '\r\n'}), input, 'wadup\r\ndoe\r\nhey');
+    testFiles(concat('test.js', {newLine: ''}), input, 'wadupdoehey');
+
+    input = [[65, 66], [67, 68], [69, 70]];
+    testFiles(concat('test.js'), input, 'AB\nCD\nEF');
+    testFiles(concat('test.js', {newLine: '\r\n'}), input, 'AB\r\nCD\r\nEF');
+    testFiles(concat('test.js', {newLine: ''}), input, 'ABCDEF');
 
     function testFiles(stream, contentses, result) {
       it('should concat one or several files', function(done) {
