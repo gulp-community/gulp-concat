@@ -1,42 +1,95 @@
-var through = require('through');
-var os = require('os');
+'use strict';
+
 var path = require('path');
+var through = require('through');
+
 var gutil = require('gulp-util');
 var PluginError = gutil.PluginError;
 var File = gutil.File;
 
-module.exports = function(fileName, opt){
-  if (!fileName) throw new PluginError('gulp-concat',  'Missing fileName option for gulp-concat');
-  if (!opt) opt = {};
-  if (!opt.newLine) opt.newLine = gutil.linefeed;
+var SourceMapConsumer = require('source-map').SourceMapConsumer;
+var SourceMapGenerator = require('source-map').SourceMapGenerator;
+var SourceNode = require('source-map').SourceNode;
 
-  var buffer = [];
-  var firstFile = null;
-
-  function bufferContents(file){
-    if (file.isNull()) return; // ignore
-    if (file.isStream()) return this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
-
-    if (!firstFile) firstFile = file;
-
-    buffer.push(file.contents.toString('utf8'));
+module.exports = function(fileName, opts) {
+  if (!fileName) {
+    throw new PluginError('gulp-concat', 'Missing fileName option for gulp-concat');
   }
 
-  function endStream(){
-    if (buffer.length === 0) return this.emit('end');
+  opts = opts || {};
+  opts.newLine = opts.newLine || gutil.linefeed;
 
-    var joinedContents = buffer.join(opt.newLine);
+  var firstFile = null;
 
-    var joinedPath = path.join(firstFile.base, fileName);
+  var sourceNode = new SourceNode();
 
-    var joinedFile = new File({
-      cwd: firstFile.cwd,
-      base: firstFile.base,
-      path: joinedPath,
-      contents: new Buffer(joinedContents)
+  function bufferContents(file) {
+    if (file.isNull()) return; // ignore
+    if (file.isStream()) return this.emit('error', new PluginError('gulp-concat', 'Streaming not supported'));
+
+    if (!firstFile) {
+      firstFile = file;
+    } else {
+      sourceNode.add(opts.newLine);
+    }
+
+    var rel = path.relative(file.cwd, file.path).replace('\\', '/'),
+        lines = file.contents.toString('utf8').split('\n');
+
+    lines.forEach(function(line, j) {
+      var lineNum = j + 1, endLine = lineNum < lines.length ? '\n' : '';
+      sourceNode.add(new SourceNode(lineNum, 0, rel, line + endLine));
     });
 
-    this.emit('data', joinedFile);
+    if (opts.sourcesContent) {
+      sourceNode.setSourceContent(file.relative, file.contents.toString('utf8'));
+    }
+  }
+
+  function endStream() {
+    if (!firstFile) return;
+
+    var contentPath = path.join(firstFile.base, fileName),
+        mapPath = contentPath + '.map';
+
+    if (opts.sourceMap) {
+      if (/\.css$/.test(fileName)) {
+        sourceNode.add('/*# sourceMappingURL=' + fileName + '.map' + ' */');
+      } else {
+        sourceNode.add('//# sourceMappingURL=' + fileName + '.map');
+      }
+    }
+
+    var codeMap = sourceNode.toStringWithSourceMap({
+        file: fileName,
+        sourceRoot: opts.sourceRoot || ''
+    });
+
+    var sourceMap = SourceMapGenerator
+                      .fromSourceMap( new SourceMapConsumer( codeMap.map.toJSON() ) )
+                      .toJSON();
+                            
+    sourceMap.file = path.basename(sourceMap.file);
+
+    var contentFile = new File({
+      cwd: firstFile.cwd,
+      base: firstFile.base,
+      path: contentPath,
+      contents: new Buffer(codeMap.code)
+    });
+
+    this.emit('data', contentFile);
+
+    if (opts.sourceMap) {
+      var mapFile = new File({
+        cwd: firstFile.cwd,
+        base: firstFile.base,
+        path: mapPath,
+        contents: new Buffer(JSON.stringify(sourceMap, null, '  '))
+      });    
+      this.emit('data', mapFile);
+    }
+
     this.emit('end');
   }
 
