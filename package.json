@@ -20,6 +20,7 @@
   "scripts": {
     "test": "mocha"
   },
+  "engineStrict": true,
   "engines": {
     "node": ">= 0.10"
   },
