@@ -1,6 +1,5 @@
 var concat = require('../');
 var should = require('should');
-var os = require('os');
 var path = require('path');
 var File = require('gulp-util').File;
 var Buffer = require('buffer').Buffer;
@@ -32,7 +31,7 @@ describe('gulp-concat', function() {
 
     function testFiles(stream, contentses, result) {
       it('should concat one or several files', function(done) {
-        stream.on('data', function(newFile){
+        stream.on('data', function(newFile) {
           should.exist(newFile);
           should.exist(newFile.path);
           should.exist(newFile.relative);
@@ -59,6 +58,6 @@ describe('gulp-concat', function() {
 
         stream.end();
       });
-    };
+    }
   });
 });
