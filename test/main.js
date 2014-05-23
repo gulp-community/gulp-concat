@@ -13,21 +13,29 @@ describe('gulp-concat', function() {
     testFiles(concat('test.js'), input, 'wadup');
     testFiles(concat('test.js', {newLine: '\r\n'}), input, 'wadup');
     testFiles(concat('test.js', {newLine: ''}), input, 'wadup');
+    testFiles(concat('test.js', {newLine: '\r\n', reverse: true}), input, 'wadup');
+    testFiles(concat('test.js', {newLine: '', reverse: true}), input, 'wadup');
 
     input = ['wadup', 'doe'];
     testFiles(concat('test.js'), input, 'wadup\ndoe');
     testFiles(concat('test.js', {newLine: '\r\n'}), input, 'wadup\r\ndoe');
     testFiles(concat('test.js', {newLine: ''}), input, 'wadupdoe');
+    testFiles(concat('test.js', {newLine: '\r\n', reverse: true}), input, 'doe\r\nwadup');
+    testFiles(concat('test.js', {newLine: '', reverse: true}), input, 'doewadup');
 
     input = ['wadup', 'doe', 'hey'];
     testFiles(concat('test.js'), input, 'wadup\ndoe\nhey');
     testFiles(concat('test.js', {newLine: '\r\n'}), input, 'wadup\r\ndoe\r\nhey');
     testFiles(concat('test.js', {newLine: ''}), input, 'wadupdoehey');
+    testFiles(concat('test.js', {newLine: '\r\n', reverse: true}), input, 'hey\r\ndoe\r\nwadup');
+    testFiles(concat('test.js', {newLine: '', reverse: true}), input, 'heydoewadup');
 
     input = [[65, 66], [67, 68], [69, 70]];
     testFiles(concat('test.js'), input, 'AB\nCD\nEF');
     testFiles(concat('test.js', {newLine: '\r\n'}), input, 'AB\r\nCD\r\nEF');
     testFiles(concat('test.js', {newLine: ''}), input, 'ABCDEF');
+    testFiles(concat('test.js', {newLine: '\r\n', reverse: true}), input, 'EF\r\nCD\r\nAB');
+    testFiles(concat('test.js', {newLine: '', reverse: true}), input, 'EFCDAB');
 
     function testFiles(stream, contentses, result) {
       it('should concat one or several files', function(done) {

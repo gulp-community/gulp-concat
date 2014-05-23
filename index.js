@@ -14,6 +14,7 @@ module.exports = function(fileName, opt) {
   var buffer = [];
   var firstFile = null;
   var newLineBuffer = opt.newLine ? new Buffer(opt.newLine) : null;
+  var reverseOrder = opt.reverse;
 
   function bufferContents(file) {
     if (file.isNull()) return; // ignore
@@ -28,7 +29,7 @@ module.exports = function(fileName, opt) {
   function endStream() {
     if (buffer.length === 0) return this.emit('end');
 
-    var joinedContents = Buffer.concat(buffer);
+    var joinedContents = Buffer.concat(reverseOrder ? buffer.reverse() : buffer);
 
     var joinedPath = path.join(firstFile.base, fileName);
 
