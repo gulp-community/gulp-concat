@@ -16,7 +16,7 @@
 </tr>
 </table>
 
-## Installation
+## Install
 
 Install package with NPM and add it to your project's development dependencies:
 
