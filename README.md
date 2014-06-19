@@ -16,6 +16,12 @@
 </tr>
 </table>
 
+## Installation
+
+Install package with NPM and add it to your project's development dependencies:
+
+`npm install --save-dev gulp-concat`
+
 ## Usage
 
 ```javascript
