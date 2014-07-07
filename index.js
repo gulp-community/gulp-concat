@@ -15,19 +15,25 @@ module.exports = function(fileName, opt) {
   var firstFile = null;
   var newLineBuffer = opt.newLine ? new Buffer(opt.newLine) : null;
 
-  var sourceMapConcatenator = new SourceMapConcatenator({ file: fileName });
+  var sourceMapConcatenator;
 
   function bufferContents(file) {
     if (file.isNull()) return; // ignore
     if (file.isStream()) return this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
 
     if (firstFile && newLineBuffer) buffer.push(newLineBuffer);
-    if (!firstFile) firstFile = file;
-
+    if (!firstFile) {
+      firstFile = file;
+      if (file.sourceMap) {
+        sourceMapConcatenator = new SourceMapConcatenator({ file: fileName });
+      }
+    }
     var fileContents = file.contents;
     buffer.push(fileContents);
 
-    sourceMapConcatenator.add(file.relative, fileContents.toString(), file.sourceMap);
+    if (sourceMapConcatenator) {
+      sourceMapConcatenator.add(file.relative, fileContents.toString(), file.sourceMap);
+    }
   }
 
   function endStream() {
@@ -43,7 +49,7 @@ module.exports = function(fileName, opt) {
       path: joinedPath,
       contents: joinedContents
     });
-    if (firstFile.sourceMap) {
+    if (sourceMapConcatenator) {
       joinedFile.sourceMap = JSON.parse(sourceMapConcatenator.sourceMap.toString());
     }
 
