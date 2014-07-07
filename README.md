@@ -50,6 +50,36 @@ For instance:
 .pipe(concat('main.js', {newLine: ';'}))
 ```
 
+### Sourcemaps
+
+Install dependency to `gulp-sourcemaps`
+
+```
+npm install --save-dev gulp-sourcemaps
+```
+
+```js
+var gulp = require('gulp');
+var pkg = require('./package.json');
+var concat = require('gulp-concat');
+var less = require('gulp-less');
+var gulpif = require('gulp-if');
+var sourcemaps = require('gulp-sourcemaps');
+
+gulp.task('browser-styles', function() {
+    gulp.src([
+        'bower_components/jquery-modern/dist/jquery.min.js',
+        'src/browser/less/main.less'
+    ], { base: 'src/browser/' })
+        .pipe(sourcemaps.init())
+            .pipe(gulpif(/.less$/, less({}).on('error', console.error)))
+            .pipe(concat(pkg.name + '-' + pkg.version + '.css'))
+        .pipe(sourcemaps.write('maps/' , { sourceRoot: '/src/browser/' }))
+        .pipe(gulp.dest('public/dist'));
+});
+```
+
+
 
 ## LICENSE
 

@@ -10,8 +10,9 @@
     "gulpplugin"
   ],
   "dependencies": {
-    "through": "^2.3.4",
-    "gulp-util": "^2.2.5"
+    "gulp-util": "^2.2.19",
+    "sourcemap-concat": "^1.0.0",
+    "through": "^2.3.4"
   },
   "devDependencies": {
     "mocha": "*",
