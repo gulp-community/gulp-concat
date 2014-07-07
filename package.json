@@ -21,8 +21,9 @@
   "scripts": {
     "test": "mocha"
   },
+  "engineStrict": true,
   "engines": {
-    "node": ">= 0.4.0"
+    "node": ">= 0.10"
   },
   "licenses": [
     {

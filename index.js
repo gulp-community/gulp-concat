@@ -5,7 +5,6 @@ var PluginError = gutil.PluginError;
 var File = gutil.File;
 var Buffer = require('buffer').Buffer;
 var SourceMapConcatenator = require('sourcemap-concat').SourceMapConcatenator;
-
 module.exports = function(fileName, opt) {
   if (!fileName) throw new PluginError('gulp-concat', 'Missing fileName option for gulp-concat');
   if (!opt) opt = {};
@@ -14,10 +13,9 @@ module.exports = function(fileName, opt) {
 
   var buffer = [];
   var firstFile = null;
+  var newLineBuffer = opt.newLine ? new Buffer(opt.newLine) : null;
 
   var sourceMapConcatenator = new SourceMapConcatenator({ file: fileName });
-
-  var newLineBuffer = opt.newLine ? new Buffer(opt.newLine) : null;
 
   function bufferContents(file) {
     if (file.isNull()) return; // ignore
