@@ -26,18 +26,21 @@ module.exports = function(fileName, opt) {
   }
 
   function endStream() {
-    var joinedPath = path.join(firstFile.base, fileName);
+    if (firstFile) {
+      var joinedPath = path.join(firstFile.base, fileName);
 
-    var joinedFile = new File({
-      cwd: firstFile.cwd,
-      base: firstFile.base,
-      path: joinedPath,
-      contents: new Buffer(concat.content)
-    });
-    if (concat.sourceMapping)
-      joinedFile.sourceMap = JSON.parse(concat.sourceMap);
+      var joinedFile = new File({
+        cwd: firstFile.cwd,
+        base: firstFile.base,
+        path: joinedPath,
+        contents: new Buffer(concat.content)
+      });
+      if (concat.sourceMapping)
+        joinedFile.sourceMap = JSON.parse(concat.sourceMap);
 
-    this.emit('data', joinedFile);
+      this.emit('data', joinedFile);
+    }
+
     this.emit('end');
   }
 

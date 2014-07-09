@@ -59,5 +59,11 @@ describe('gulp-concat', function() {
         stream.end();
       });
     }
+
+    it('should not fail if no files were input', function(done) {
+      var stream = concat('test.js');
+      stream.end();
+      done();
+    });
   });
 });
