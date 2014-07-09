@@ -22,7 +22,7 @@ module.exports = function(fileName, opt) {
     if (!firstFile) firstFile = file;
     if (!concat) concat = new Concat(!!firstFile.sourceMap, fileName, opt.newLine);
 
-    concat.add(file.relative, file.contents.toString(), file.sourceMap);
+    concat.add(file.path, file.contents.toString(), file.sourceMap);
   }
 
   function endStream() {
