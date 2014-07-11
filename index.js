@@ -12,21 +12,31 @@ module.exports = function(fileName, opt) {
   // to preserve existing |undefined| behaviour and to introduce |newLine: ""| for binaries
   if (typeof opt.newLine !== 'string') opt.newLine = gutil.linefeed;
 
-  var firstFile = null;
-  var concat = null;
+  var buffer = [];
 
   function bufferContents(file) {
     if (file.isNull()) return; // ignore
     if (file.isStream()) return this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
 
-    if (!firstFile) firstFile = file;
-    if (!concat) concat = new Concat(!!firstFile.sourceMap, fileName, opt.newLine);
-
-    concat.add(file.relative, file.contents.toString(), file.sourceMap);
+    buffer.push(file);
   }
 
   function endStream() {
-    if (firstFile) {
+    var length = buffer.length;
+    if (length > 0) {
+      var firstFile = buffer[0];
+
+      if (opt.sort) {
+        buffer.sort(function (a, b) { return a.path > b.path; });
+      }
+
+      var concat = new Concat(!!firstFile.sourceMap, fileName, opt.newLine);
+
+      for (var i = 0; i < length; i++) {
+        var file = buffer[i];
+        concat.add(file.relative, file.contents.toString(), file.sourceMap);
+      }
+
       var joinedPath = path.join(firstFile.base, fileName);
 
       var joinedFile = new File({

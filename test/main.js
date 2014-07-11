@@ -18,11 +18,13 @@ describe('gulp-concat', function() {
     testFiles(concat('test.js'), input, 'wadup\ndoe');
     testFiles(concat('test.js', {newLine: '\r\n'}), input, 'wadup\r\ndoe');
     testFiles(concat('test.js', {newLine: ''}), input, 'wadupdoe');
+    testFiles(concat('test.js', {sort: true}), input, 'doe\nwadup');
 
     input = ['wadup', 'doe', 'hey'];
     testFiles(concat('test.js'), input, 'wadup\ndoe\nhey');
     testFiles(concat('test.js', {newLine: '\r\n'}), input, 'wadup\r\ndoe\r\nhey');
     testFiles(concat('test.js', {newLine: ''}), input, 'wadupdoehey');
+    testFiles(concat('test.js', {sort: true}), input, 'doe\nhey\nwadup');
 
     input = [[65, 66], [67, 68], [69, 70]];
     testFiles(concat('test.js'), input, 'AB\nCD\nEF');
@@ -51,7 +53,7 @@ describe('gulp-concat', function() {
           stream.write(new File({
             cwd: '/home/contra/',
             base: '/home/contra/test',
-            path: '/home/contra/test/file' + i.toString() + '.js',
+            path: '/home/contra/test/file' + contents.toString() + '.js',
             contents: new Buffer(contents)
           }));
         });
