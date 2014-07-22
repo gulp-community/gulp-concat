@@ -44,6 +44,7 @@ describe('gulp-concat', function() {
           newFile.relative.should.equal('test.js');
           String(newFile.contents).should.equal(result);
           Buffer.isBuffer(newFile.contents).should.equal(true);
+          newFile.stat.mode.should.equal(0666);
           done();
         });
 
@@ -52,7 +53,8 @@ describe('gulp-concat', function() {
             cwd: '/home/contra/',
             base: '/home/contra/test',
             path: '/home/contra/test/file' + i.toString() + '.js',
-            contents: new Buffer(contents)
+            contents: new Buffer(contents),
+            stat: {mode: 0666}
           }));
         });
 
