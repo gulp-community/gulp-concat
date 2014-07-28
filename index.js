@@ -21,8 +21,20 @@ module.exports = function(fileName, opt) {
 
     if (!firstFile) firstFile = file;
     if (!concat) concat = new Concat(!!firstFile.sourceMap, fileName, opt.newLine);
+    
+    var content = '';
+    
+    if(opt.insertSourceName) {
+      content += [
+        opt.insertSourceName.open || '/*', 
+        opt.insertSourceName.open || '*/'
+      ].join(file.relative)
+      content += '\n';
+    }
+    
+    content += file.contents.toString();
 
-    concat.add(file.relative, file.contents.toString(), file.sourceMap);
+    concat.add(file.relative, content, file.sourceMap);
   }
 
   function endStream() {
