@@ -18,7 +18,7 @@
 
 ## Usage
 
-```javascript
+```js
 var concat = require('gulp-concat');
 
 gulp.task('scripts', function() {
@@ -32,7 +32,7 @@ This will concat files by your operating systems newLine. It will take the base 
 
 Files will be concatenated in the order that they are specified in the `gulp.src` function. For example, to concat `./lib/file3.js`, `./lib/file1.js` and `./lib/file2.js` in that order, the following code will create a task to do that:
 
-```javascript
+```js
 var concat = require('gulp-concat');
 
 gulp.task('scripts', function() {
@@ -46,7 +46,7 @@ To change the newLine simply pass an object as the second argument to concat wit
 
 For instance:
 
-```
+```js
 .pipe(concat('main.js', {newLine: ';'}))
 ```
 
