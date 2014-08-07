@@ -27,15 +27,11 @@ module.exports = function(fileName, opt) {
 
   function endStream() {
     if (firstFile) {
-      var joinedPath = path.join(firstFile.base, fileName);
+      var joinedFile = firstFile.clone();
 
-      var joinedFile = new File({
-        cwd: firstFile.cwd,
-        base: firstFile.base,
-        path: joinedPath,
-        contents: new Buffer(concat.content),
-        stat: firstFile.stat
-      });
+      joinedFile.path = path.join(firstFile.base, fileName);
+      joinedFile.contents = new Buffer(concat.content);
+
       if (concat.sourceMapping)
         joinedFile.sourceMap = JSON.parse(concat.sourceMap);
 
