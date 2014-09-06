@@ -6,13 +6,23 @@ var File = gutil.File;
 var Buffer = require('buffer').Buffer;
 var Concat = require('concat-with-sourcemaps');
 
-module.exports = function(fileName, opt) {
-  if (!fileName) throw new PluginError('gulp-concat', 'Missing fileName option for gulp-concat');
+module.exports = function(file, opt) {
+  if (!file) throw new PluginError('gulp-concat', 'Missing file option for gulp-concat');
   if (!opt) opt = {};
   // to preserve existing |undefined| behaviour and to introduce |newLine: ""| for binaries
   if (typeof opt.newLine !== 'string') opt.newLine = gutil.linefeed;
 
   var firstFile = null;
+
+  var fileName = file;
+  if (typeof file !== 'string') {
+    if (typeof file.path !== 'string') {
+      throw new PluginError('gulp-concat', 'Missing path in file options for gulp-concat');
+    }
+    fileName = path.basename(file.path);
+    firstFile = new File(file);
+  }
+
   var concat = null;
 
   function bufferContents(file) {
@@ -27,9 +37,13 @@ module.exports = function(fileName, opt) {
 
   function endStream() {
     if (firstFile) {
-      var joinedFile = firstFile.clone();
+      var joinedFile = firstFile;
 
-      joinedFile.path = path.join(firstFile.base, fileName);
+      if (typeof file === 'string') {
+        joinedFile = firstFile.clone({contents: false});
+        joinedFile.path = path.join(firstFile.base, file);
+      }
+
       joinedFile.contents = new Buffer(concat.content);
 
       if (concat.sourceMapping)
