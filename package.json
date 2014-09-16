@@ -22,7 +22,7 @@
     "mocha-lcov-reporter": "*",
     "should": "*",
     "stream-array": "^0.1.3",
-    "stream-assert": "^1.0.0"
+    "stream-assert": "^2.0.1"
   },
   "scripts": {
     "test": "mocha",
