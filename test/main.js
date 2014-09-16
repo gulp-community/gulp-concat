@@ -22,7 +22,7 @@ describe('gulp-concat', function() {
       var stream = concat('test.js');
       stream
         .pipe(assert.length(0))
-        .on('end', done);
+        .pipe(assert.end(done));
       stream.write(new File());
       stream.end();
     });
@@ -40,7 +40,7 @@ describe('gulp-concat', function() {
       test('wadap')
         .pipe(concat('test.js'))
         .pipe(assert.first(function (d) { d.contents.toString().should.eql('wadap'); }))
-        .on('end', done);
+        .pipe(assert.end(done));
     });
 
     it('should concat multiple files', function (done) {
@@ -48,21 +48,21 @@ describe('gulp-concat', function() {
         .pipe(concat('test.js'))
         .pipe(assert.length(1))
         .pipe(assert.first(function (d) { d.contents.toString().should.eql('wadap\ndoe'); }))
-        .on('end', done);
+        .pipe(assert.end(done));
     });
 
     it('should concatinate buffers', function (done) {
       test([65, 66], [67, 68], [69, 70])
         .pipe(concat('test.js'))
         .pipe(assert.first(function (d) { d.contents.toString().should.eql('AB\nCD\nEF'); }))
-        .on('end', done);
+        .pipe(assert.end(done));
     });
 
     it('should preserve mode from files', function (done) {
       test('wadaup')
         .pipe(concat('test.js'))
         .pipe(assert.first(function (d) { d.stat.mode.should.eql(0666); }))
-        .on('end', done);
+        .pipe(assert.end(done));
     });
 
     it('should take path from first file', function (done) {
@@ -73,14 +73,14 @@ describe('gulp-concat', function() {
           var expectedFilePath = path.resolve('/home/contra/test/test.js');
           newFilePath.should.equal(expectedFilePath);
         }))
-        .on('end', done);
+        .pipe(assert.end(done));
     });
 
     it('should preserve relative path from files', function (done) {
       test('wadap', 'doe')
         .pipe(concat('test.js'))
         .pipe(assert.first(function (d) { d.relative.should.eql('test.js'); }))
-        .on('end', done);
+        .pipe(assert.end(done));
     });
 
     it('should support source maps', function (done) {
@@ -91,7 +91,7 @@ describe('gulp-concat', function() {
           d.sourceMap.sources.should.have.length(2);
           d.sourceMap.file.should.eql('all.js');
         }))
-        .on('end', done);
+        .pipe(assert.end(done));
     });
 
     it('should not fail if no files were input', function(done) {
@@ -105,14 +105,14 @@ describe('gulp-concat', function() {
         test('wadap', 'doe')
           .pipe(concat('test.js', {newLine: '\r\n'}))
           .pipe(assert.first(function (d) { d.contents.toString().should.eql('wadap\r\ndoe'); }))
-          .on('end', done);
+          .pipe(assert.end(done));
       })
 
       it('should support empty newLine', function (done) {
         test('wadap', 'doe')
           .pipe(concat('test.js', {newLine: ''}))
           .pipe(assert.first(function (d) { d.contents.toString().should.eql('wadapdoe'); }))
-          .on('end', done);
+          .pipe(assert.end(done));
       })
     });
 
@@ -127,14 +127,14 @@ describe('gulp-concat', function() {
         test('wadap')
           .pipe(concat({path: 'new.txt'}))
           .pipe(assert.first(function (d) { d.path.should.eql('new.txt'); }))
-          .on('end', done);
+          .pipe(assert.end(done));
       });
 
       it('should calculate relative path from cwd and path in arguments', function (done) {
         test('wadap')
           .pipe(concat({cwd: '/home/contra', path: '/home/contra/test/new.txt'}))
           .pipe(assert.first(function (d) { d.relative.should.eql('test/new.txt'); }))
-          .on('end', done);
+          .pipe(assert.end(done));
       });
     });
   });
