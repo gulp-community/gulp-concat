@@ -30,7 +30,7 @@ module.exports = function(file, opt) {
     if (file.isStream()) return this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
 
     if (!firstFile) firstFile = file;
-    if (!concat) concat = new Concat(!!firstFile.sourceMap, fileName, opt.newLine);
+    if (!concat) concat = new Concat(!!firstFile.sourceMap || !!file.sourceMap, fileName, opt.newLine);
 
     concat.add(file.relative, file.contents.toString(), file.sourceMap);
   }
