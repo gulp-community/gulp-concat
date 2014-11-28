@@ -6,6 +6,8 @@ var File = gutil.File;
 var Buffer = require('buffer').Buffer;
 var Concat = require('concat-with-sourcemaps');
 
+// file can be a vinyl file object or a string
+// when a string it will construct a new one
 module.exports = function(file, opt) {
   if (!file) {
     throw new PluginError('gulp-concat', 'Missing file option for gulp-concat');
@@ -37,6 +39,7 @@ module.exports = function(file, opt) {
       return;
     }
 
+    // we dont do streams (yet)
     if (file.isStream()) {
       return this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
     }
@@ -67,11 +70,15 @@ module.exports = function(file, opt) {
       return this.emit('end');
     }
 
-    var joinedFile = firstFile;
+    var joinedFile;
 
+    // if file opt was a file path
+    // clone everything from the first file
     if (typeof file === 'string') {
       joinedFile = firstFile.clone({contents: false});
       joinedFile.path = path.join(firstFile.base, file);
+    } else {
+      joinedFile = firstFile;
     }
 
     joinedFile.contents = new Buffer(concat.content);
