@@ -7,51 +7,80 @@ var Buffer = require('buffer').Buffer;
 var Concat = require('concat-with-sourcemaps');
 
 module.exports = function(file, opt) {
-  if (!file) throw new PluginError('gulp-concat', 'Missing file option for gulp-concat');
-  if (!opt) opt = {};
+  if (!file) {
+    throw new PluginError('gulp-concat', 'Missing file option for gulp-concat');
+  }
+  opt = opt || {};
+
   // to preserve existing |undefined| behaviour and to introduce |newLine: ""| for binaries
-  if (typeof opt.newLine !== 'string') opt.newLine = gutil.linefeed;
-
-  var firstFile = null;
-
-  var fileName = file;
-  if (typeof file !== 'string') {
-    if (typeof file.path !== 'string') {
-      throw new PluginError('gulp-concat', 'Missing path in file options for gulp-concat');
-    }
-    fileName = path.basename(file.path);
-    firstFile = new File(file);
+  if (typeof opt.newLine !== 'string') {
+    opt.newLine = gutil.linefeed;
   }
 
-  var concat = null;
+  var isUsingSourceMaps = false;
+  var firstFile;
+  var fileName;
+  var concat;
+
+  if (typeof file === 'string') {
+    fileName = file;
+  } else if (typeof file.path === 'string') {
+    fileName = path.basename(file.path);
+    firstFile = new File(file);
+  } else {
+    throw new PluginError('gulp-concat', 'Missing path in file options for gulp-concat');
+  }
 
   function bufferContents(file) {
-    if (file.isNull()) return; // ignore
-    if (file.isStream()) return this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
+    // ignore empty files
+    if (file.isNull()) {
+      return;
+    }
 
-    if (!firstFile) firstFile = file;
-    if (!concat) concat = new Concat(!!firstFile.sourceMap || !!file.sourceMap, fileName, opt.newLine);
+    if (file.isStream()) {
+      return this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
+    }
 
+    // enable sourcemap support for concat
+    // if a sourcemap initialized file comes in
+    if (file.sourceMap && isUsingSourceMaps === false) {
+      isUsingSourceMaps = true;
+    }
+
+    // set first file if not already set
+    if (!firstFile) {
+      firstFile = file;
+    }
+
+    // construct concat instance
+    if (!concat) {
+      concat = new Concat(isUsingSourceMaps, fileName, opt.newLine);
+    }
+
+    // add file to concat instance
     concat.add(file.relative, file.contents.toString(), file.sourceMap);
   }
 
   function endStream() {
-    if (firstFile) {
-      var joinedFile = firstFile;
-
-      if (typeof file === 'string') {
-        joinedFile = firstFile.clone({contents: false});
-        joinedFile.path = path.join(firstFile.base, file);
-      }
-
-      joinedFile.contents = new Buffer(concat.content);
-
-      if (concat.sourceMapping)
-        joinedFile.sourceMap = JSON.parse(concat.sourceMap);
-
-      this.emit('data', joinedFile);
+    // no files passed in, no file goes out
+    if (!firstFile) {
+      return this.emit('end');
     }
 
+    var joinedFile = firstFile;
+
+    if (typeof file === 'string') {
+      joinedFile = firstFile.clone({contents: false});
+      joinedFile.path = path.join(firstFile.base, file);
+    }
+
+    joinedFile.contents = new Buffer(concat.content);
+
+    if (concat.sourceMapping) {
+      joinedFile.sourceMap = JSON.parse(concat.sourceMap);
+    }
+
+    this.emit('data', joinedFile);
     this.emit('end');
   }
 
