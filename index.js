@@ -61,7 +61,7 @@ module.exports = function(file, opt) {
     }
 
     // add file to concat instance
-    concat.add(file.relative, file.contents.toString(), file.sourceMap);
+    concat.add(file.relative, file.contents, file.sourceMap);
   }
 
   function endStream() {
@@ -81,7 +81,7 @@ module.exports = function(file, opt) {
       joinedFile = firstFile;
     }
 
-    joinedFile.contents = new Buffer(concat.content);
+    joinedFile.contents = concat.content;
 
     if (concat.sourceMapping) {
       joinedFile.sourceMap = JSON.parse(concat.sourceMap);
