@@ -3,7 +3,6 @@ var path = require('path');
 var gutil = require('gulp-util');
 var PluginError = gutil.PluginError;
 var File = gutil.File;
-var Buffer = require('buffer').Buffer;
 var Concat = require('concat-with-sourcemaps');
 
 // file can be a vinyl file object or a string
