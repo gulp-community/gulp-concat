@@ -14,7 +14,7 @@
   "dependencies": {
     "concat-with-sourcemaps": "^1.0.0",
     "gulp-util": "^3.0.1",
-    "through": "^2.3.4"
+    "through2": "^0.6.3"
   },
   "devDependencies": {
     "gulp": "^3.8.7",
