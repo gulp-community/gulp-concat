@@ -5,7 +5,9 @@
   "homepage": "http://github.com/wearefractal/gulp-concat",
   "repository": "git://github.com/wearefractal/gulp-concat.git",
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
-  "main": "./index.js",
+  "files": [
+    "index.js"
+  ],
   "keywords": [
     "gulpplugin"
   ],
