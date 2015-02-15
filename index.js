@@ -1,4 +1,6 @@
-var through = require('through');
+'use strict';
+
+var through = require('through2');
 var path = require('path');
 var gutil = require('gulp-util');
 var PluginError = gutil.PluginError;
@@ -32,15 +34,18 @@ module.exports = function(file, opt) {
     throw new PluginError('gulp-concat', 'Missing path in file options for gulp-concat');
   }
 
-  function bufferContents(file) {
+  function bufferContents(file, enc, cb) {
     // ignore empty files
     if (file.isNull()) {
+      cb();
       return;
     }
 
     // we dont do streams (yet)
     if (file.isStream()) {
-      return this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
+      this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
+      cb();
+      return;
     }
 
     // enable sourcemap support for concat
@@ -61,12 +66,14 @@ module.exports = function(file, opt) {
 
     // add file to concat instance
     concat.add(file.relative, file.contents, file.sourceMap);
+    cb();
   }
 
-  function endStream() {
+  function endStream(cb) {
     // no files passed in, no file goes out
     if (!firstFile) {
-      return this.emit('end');
+      cb();
+      return;
     }
 
     var joinedFile;
@@ -86,9 +93,9 @@ module.exports = function(file, opt) {
       joinedFile.sourceMap = JSON.parse(concat.sourceMap);
     }
 
-    this.emit('data', joinedFile);
-    this.emit('end');
+    this.push(joinedFile);
+    cb();
   }
 
-  return through(bufferContents, endStream);
+  return through.obj(bufferContents, endStream);
 };
