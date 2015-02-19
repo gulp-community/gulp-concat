@@ -71,7 +71,7 @@ module.exports = function(file, opt) {
 
   function endStream(cb) {
     // no files passed in, no file goes out
-    if (!firstFile) {
+    if (!firstFile || !concat) {
       cb();
       return;
     }
