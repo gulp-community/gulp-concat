@@ -100,12 +100,20 @@ describe('gulp-concat', function() {
         .pipe(assert.end(done));
     });
 
-    it('should not fail if no files were input', function(done) {
-      var stream = concat('test.js');
-      stream.end();
-      done();
+    describe('should not fail if no files were input', function () {
+      it('when argument is a string', function(done) {
+        var stream = concat('test.js');
+        stream.end();
+        done();
+      });
+  
+      it('when argument is an object', function(done) {
+        var stream = concat({path: 'new.txt'});
+        stream.end();
+        done();
+      });
     });
-
+    
     describe('options', function () {
       it('should support newLine', function (done) {
         test('wadap', 'doe')
