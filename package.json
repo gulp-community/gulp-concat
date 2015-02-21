@@ -29,7 +29,6 @@
     "test": "mocha",
     "coverage": "istanbul cover _mocha"
   },
-  "engineStrict": true,
   "engines": {
     "node": ">= 0.10"
   },
