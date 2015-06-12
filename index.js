@@ -1,6 +1,7 @@
 'use strict';
 
 var through = require('through2');
+var fs = require('fs');
 var path = require('path');
 var gutil = require('gulp-util');
 var PluginError = gutil.PluginError;
@@ -20,12 +21,19 @@ module.exports = function(file, opt) {
     opt.newLine = gutil.linefeed;
   }
 
+  // unless opt.force is true, only concatenate and push through the joined file 
+  // when the destination does not exist or is older than the newest source file
+  if (typeof opt.force !== 'boolean') {
+    opt.force = false;
+  }
+
+
   var isUsingSourceMaps = false;
   var latestFile;
   var latestMod;
   var fileName;
-  var concat;
-
+  var queue = [];
+  
   if (typeof file === 'string') {
     fileName = file;
   } else if (typeof file.path === 'string') {
@@ -41,7 +49,7 @@ module.exports = function(file, opt) {
       return;
     }
 
-    // we don't do streams (yet)
+    // we dont do streams (yet)
     if (file.isStream()) {
       this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
       cb();
@@ -61,23 +69,21 @@ module.exports = function(file, opt) {
       latestMod = file.stat && file.stat.mtime;
     }
 
-    // construct concat instance
-    if (!concat) {
-      concat = new Concat(isUsingSourceMaps, fileName, opt.newLine);
-    }
+    // add file to the queue
+    queue.push(file);
 
-    // add file to concat instance
-    concat.add(file.relative, file.contents, file.sourceMap);
     cb();
   }
 
   function endStream(cb) {
+
     // no files passed in, no file goes out
-    if (!latestFile || !concat) {
+    if (!latestFile) {
       cb();
       return;
     }
 
+    var self = this;
     var joinedFile;
 
     // if file opt was a file path
@@ -89,14 +95,45 @@ module.exports = function(file, opt) {
       joinedFile = new File(file);
     }
 
-    joinedFile.contents = concat.content;
+    fs.stat(joinedFile.path, function(err, stat) {
 
-    if (concat.sourceMapping) {
-      joinedFile.sourceMap = JSON.parse(concat.sourceMap);
-    }
+      var pass = true;
+      var concat;
 
-    this.push(joinedFile);
-    cb();
+      // if opt.force is false, check whether we can skip the concatenation
+      if (!opt.force) {
+        if (err) {
+          if (err.code !== 'ENOENT') {
+            self.emit('error', new PluginError('gulp-concat', 'Can\'t stat destination'));
+            pass = false;
+          }
+        } else if (latestMod && stat.mtime > latestMod) {
+          pass = false;
+        }
+      }
+
+      if (pass) {
+        // construct concat instance
+        concat = new Concat(isUsingSourceMaps, fileName, opt.newLine);
+
+        // add files to concat instance
+        while (queue.length !== 0) {
+          var f = queue.shift();
+          concat.add(f.relative, f.contents, f.sourceMap);
+        }
+
+        joinedFile.contents = concat.content;
+
+        if (concat.sourceMapping) {
+          joinedFile.sourceMap = JSON.parse(concat.sourceMap);
+        }
+
+        self.push(joinedFile);
+      }
+
+      cb();
+    });
+
   }
 
   return through.obj(bufferContents, endStream);
