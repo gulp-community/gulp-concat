@@ -1,5 +1,6 @@
 var concat = require('../');
 var should = require('should');
+var fs = require('fs');
 var path = require('path');
 var assert = require('stream-assert');
 var test = require('./test-stream');
@@ -10,7 +11,25 @@ require('mocha');
 
 var fixtures = function (glob) { return path.join(__dirname, 'fixtures', glob); }
 
+var thirdBase = __dirname,
+    thirdFile = 'third.js',
+    thirdPath = path.join(thirdBase, thirdFile);
+
 describe('gulp-concat', function() {
+
+
+  // Create a third fixture, so we'll know it has the latest modified stamp.
+  // It must not live in the test/fixtures directory, otherwise the test
+  // 'should take path from latest file' will be meaningless.
+  before(function(done){
+    fs.writeFile(thirdPath, 'console.log(\'third\');\n', done);
+  });
+
+  // We'll delete it when we're done.
+  after(function(done){
+    fs.unlink(thirdPath, done);
+  });
+
   describe('concat()', function() {
     it('should throw, when arguments is missing', function () {
       (function() {
@@ -52,7 +71,7 @@ describe('gulp-concat', function() {
         .pipe(assert.end(done));
     });
 
-    it('should concatinate buffers', function (done) {
+    it('should concat buffers', function (done) {
       test([65, 66], [67, 68], [69, 70])
         .pipe(concat('test.js'))
         .pipe(assert.length(1))
@@ -68,13 +87,13 @@ describe('gulp-concat', function() {
         .pipe(assert.end(done));
     });
 
-    it('should take path from first file', function (done) {
-      test('wadap', 'doe')
+    it('should take path from latest file', function (done) {
+      gulp.src([fixtures('*'), thirdPath])
         .pipe(concat('test.js'))
         .pipe(assert.length(1))
         .pipe(assert.first(function (newFile) {
           var newFilePath = path.resolve(newFile.path);
-          var expectedFilePath = path.resolve('/home/contra/test/test.js');
+          var expectedFilePath = path.resolve(path.join(thirdBase, 'test.js'));
           newFilePath.should.equal(expectedFilePath);
         }))
         .pipe(assert.end(done));
@@ -157,3 +176,4 @@ describe('gulp-concat', function() {
     });
   });
 });
+
