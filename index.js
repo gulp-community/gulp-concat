@@ -21,20 +21,25 @@ module.exports = function(file, opt) {
   }
 
   var isUsingSourceMaps = false;
-  var latestFile;
-  var latestMod;
   var fileName;
+  var fileNameFromFn;
   var concat;
+  var targets = {};
 
   if (typeof file === 'string') {
     fileName = file;
   } else if (typeof file.path === 'string') {
     fileName = path.basename(file.path);
+  } else if(file.constructor === Function || (file.path && file.path.constructor === Function)) {
+    fileNameFromFn = (file.path || file);
   } else {
     throw new PluginError('gulp-concat', 'Missing path in file options for gulp-concat');
   }
 
+
   function bufferContents(file, enc, cb) {
+    var source;
+
     // ignore empty files
     if (file.isNull()) {
       cb();
@@ -54,48 +59,67 @@ module.exports = function(file, opt) {
       isUsingSourceMaps = true;
     }
 
+    // Get target filename from function.
+    if(fileNameFromFn) {
+      fileName = fileNameFromFn(file);
+
+      if(!fileName) {
+        throw new PluginError('gulp-concat', 'When using a function to dynamically generate fileName, please ensure a valid name is returned: '+fileName);
+      }
+    }
+
+    // Targets map.
+    // Anything passed as the target name will be
+    // saved to this map and iterated over within endSteam.
+    if(!targets[fileName]) {
+      targets[fileName] = {files: []};
+    }
+
+    // Add current file from stream to map
+    targets[fileName].files[file.path] = {};
+
+    // Add instance
+    if(!targets[fileName].files[file.path]) {
+      targets[fileName].files[file.path] = {instance: file};
+    }
+
+    // Create shorthand pointer
+    source = targets[fileName].files[file.path];
+
     // set latest file if not already set,
     // or if the current file was modified more recently.
-    if (!latestMod || file.stat && file.stat.mtime > latestMod) {
-      latestFile = file;
-      latestMod = file.stat && file.stat.mtime;
+    if (!source.latestMod || source.instance.stat && source.instance.stat.mtime > source.latestMod) {
+      source.instance = file;
+      source.latestMod = source.instance.stat && source.instance.stat.mtime;
     }
 
     // construct concat instance
-    if (!concat) {
-      concat = new Concat(isUsingSourceMaps, fileName, opt.newLine);
+    if (!targets[fileName].concat) {
+      targets[fileName].concat = new Concat(isUsingSourceMaps, fileName, opt.newLine);
     }
 
     // add file to concat instance
-    concat.add(file.relative, file.contents, file.sourceMap);
+    targets[fileName].concat.add(source.instance.relative, source.instance.contents, source.instance.sourceMap);
     cb();
   }
 
   function endStream(cb) {
-    // no files passed in, no file goes out
-    if (!latestFile || !concat) {
-      cb();
-      return;
+
+    // Loop through saved files
+    // Create a new File object and set its contents to the
+    // contents add via concat.add()
+    for(var group in targets) {
+      targets[group].instance = new File({path: group});
+      targets[group].instance.contents = targets[group].concat.content;
+
+      if(targets[group].sourceMapping) {
+        targets[group].instance.sourceMap = JSON.parse(targets[group].concat.sourceMap);
+      }
+
+      // Add files to stream
+      this.push(targets[group].instance);
     }
 
-    var joinedFile;
-
-    // if file opt was a file path
-    // clone everything from the latest file
-    if (typeof file === 'string') {
-      joinedFile = latestFile.clone({contents: false});
-      joinedFile.path = path.join(latestFile.base, file);
-    } else {
-      joinedFile = new File(file);
-    }
-
-    joinedFile.contents = concat.content;
-
-    if (concat.sourceMapping) {
-      joinedFile.sourceMap = JSON.parse(concat.sourceMap);
-    }
-
-    this.push(joinedFile);
     cb();
   }
 

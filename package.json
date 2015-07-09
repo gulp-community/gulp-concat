@@ -16,14 +16,17 @@
     "through2": "^0.6.3"
   },
   "devDependencies": {
+    "assert": "^1.3.0",
     "gulp": "^3.8.7",
     "gulp-sourcemaps": "^1.1.4",
     "istanbul": "^0.3.2",
     "mocha": "^2.0.1",
     "mocha-lcov-reporter": "0.0.1",
+    "run-sequence": "^1.1.1",
     "should": "^5.0.0",
     "stream-array": "^1.0.1",
-    "stream-assert": "^2.0.1"
+    "stream-assert": "^2.0.1",
+    "vows": "^0.8.1"
   },
   "scripts": {
     "test": "mocha",
