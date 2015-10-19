@@ -1,4 +1,4 @@
-![status](https://secure.travis-ci.org/wearefractal/gulp-concat.svg?branch=master)
+![status](https://secure.travis-ci.org/contra/gulp-concat.svg?branch=master)
 
 ## Information
 
