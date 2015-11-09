@@ -1,5 +1,11 @@
 ![status](https://secure.travis-ci.org/contra/gulp-concat.svg?branch=master)
 
+## Installation
+
+Install package with NPM and add it to your development dependencies:
+
+`npm install --save-dev gulp-concat`
+
 ## Information
 
 <table>
