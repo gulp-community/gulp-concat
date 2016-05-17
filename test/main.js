@@ -168,9 +168,9 @@ describe('gulp-concat', function() {
 
       it('should calculate relative path from cwd and path in arguments', function (done) {
         test('wadap')
-          .pipe(concat({cwd: '/home/contra', path: '/home/contra/test/new.txt'}))
+          .pipe(concat({cwd: path.normalize('/home/contra'), path: path.normalize('/home/contra/test/new.txt')}))
           .pipe(assert.length(1))
-          .pipe(assert.first(function (d) { d.relative.should.eql('test/new.txt'); }))
+          .pipe(assert.first(function (d) { d.relative.should.eql(path.normalize('test/new.txt')); }))
           .pipe(assert.end(done));
       });
     });
