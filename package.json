@@ -2,7 +2,7 @@
   "name": "gulp-concat",
   "description": "Concatenates files",
   "version": "2.6.0",
-  "repository": "wearefractal/gulp-concat",
+  "repository": "contra/gulp-concat",
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
   "files": [
     "index.js"
