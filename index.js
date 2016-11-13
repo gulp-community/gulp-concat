@@ -2,22 +2,20 @@
 
 var through = require('through2');
 var path = require('path');
-var gutil = require('gulp-util');
-var PluginError = gutil.PluginError;
-var File = gutil.File;
+var File = require('vinyl');
 var Concat = require('concat-with-sourcemaps');
 
 // file can be a vinyl file object or a string
 // when a string it will construct a new one
 module.exports = function(file, opt) {
   if (!file) {
-    throw new PluginError('gulp-concat', 'Missing file option for gulp-concat');
+    throw new Error('gulp-concat: Missing file option');
   }
   opt = opt || {};
 
   // to preserve existing |undefined| behaviour and to introduce |newLine: ""| for binaries
   if (typeof opt.newLine !== 'string') {
-    opt.newLine = gutil.linefeed;
+    opt.newLine = '\n';
   }
 
   var isUsingSourceMaps = false;
@@ -31,7 +29,7 @@ module.exports = function(file, opt) {
   } else if (typeof file.path === 'string') {
     fileName = path.basename(file.path);
   } else {
-    throw new PluginError('gulp-concat', 'Missing path in file options for gulp-concat');
+    throw new Error('gulp-concat: Missing path in file options');
   }
 
   function bufferContents(file, enc, cb) {
@@ -43,7 +41,7 @@ module.exports = function(file, opt) {
 
     // we don't do streams (yet)
     if (file.isStream()) {
-      this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
+      this.emit('error', new Error('gulp-concat: Streaming not supported'));
       cb();
       return;
     }

@@ -4,7 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var assert = require('stream-assert');
 var test = require('./test-stream');
-var File = require('gulp-util').File;
+var File = require('vinyl');
 var gulp = require('gulp');
 var sourcemaps = require('gulp-sourcemaps');
 require('mocha');
@@ -32,9 +32,7 @@ describe('gulp-concat', function() {
 
   describe('concat()', function() {
     it('should throw, when arguments is missing', function () {
-      (function() {
-        concat();
-      }).should.throw('Missing file option for gulp-concat');
+        concat.should.throw('gulp-concat: Missing file option');
     });
 
     it('should ignore null files', function (done) {
@@ -49,8 +47,8 @@ describe('gulp-concat', function() {
     it('should emit error on streamed file', function (done) {
       gulp.src(fixtures('*'), { buffer: false })
         .pipe(concat('test.js'))
-        .on('error', function (err) {
-          err.message.should.eql('Streaming not supported');
+        .once('error', function (err) {
+          err.message.should.eql('gulp-concat: Streaming not supported');
           done();
         });
     });
@@ -125,14 +123,14 @@ describe('gulp-concat', function() {
         stream.end();
         done();
       });
-  
+
       it('when argument is an object', function(done) {
         var stream = concat({path: 'new.txt'});
         stream.end();
         done();
       });
     });
-    
+
     describe('options', function () {
       it('should support newLine', function (done) {
         test('wadap', 'doe')
@@ -155,7 +153,7 @@ describe('gulp-concat', function() {
       it('should throw without path', function () {
         (function() {
           concat({ path: undefined });
-        }).should.throw('Missing path in file options for gulp-concat');
+        }).should.throw('gulp-concat: Missing path in file options');
       });
 
       it('should create file based on path property', function (done) {
@@ -176,4 +174,3 @@ describe('gulp-concat', function() {
     });
   });
 });
-

@@ -1,5 +1,5 @@
 var array = require('stream-array');
-var File = require('gulp-util').File;
+var File = require('vinyl');
 
 module.exports = function () {
   var args = Array.prototype.slice.call(arguments);
