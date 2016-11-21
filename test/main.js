@@ -97,6 +97,20 @@ describe('gulp-concat', function() {
         .pipe(assert.end(done));
     });
 
+    it('should overwrite newer file if force option is true', function(done) {
+      gulp.src(fixtures('*'))
+      .pipe(concat({path:thirdPath}, { force:true }))
+      .pipe(assert.length(1))
+      .pipe(assert.end(done));
+    });
+
+    it('should not overwrite newer file if force option is false', function(done) {
+      gulp.src(fixtures('*'))
+      .pipe(concat({path:thirdPath}, { force:false }))
+      .pipe(assert.length(0))
+      .pipe(assert.end(done));
+    });
+
     it('should preserve relative path from files', function (done) {
       test('wadap', 'doe')
         .pipe(concat('test.js'))
