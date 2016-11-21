@@ -63,6 +63,11 @@ module.exports = function(file, opt) {
     if (!concat) {
       concat = new Concat(isUsingSourceMaps, fileName, opt.newLine);
     }
+    
+    //add a header line for every file
+    if (opt.addHeaders){
+      file.contents = new Buffer(opt.addHeaders(file.relative, file.contents));
+    }
 
     // add file to concat instance
     concat.add(file.relative, file.contents, file.sourceMap);
