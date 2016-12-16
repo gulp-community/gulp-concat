@@ -18,6 +18,13 @@ module.exports = function(file, opt) {
     opt.newLine = '\n';
   }
 
+  if (!opt.prefix || typeof opt.prefix !== 'string') {
+    opt.prefix = '';
+  }
+  if (!opt.suffix || typeof opt.suffix !== 'string') {
+    opt.suffix = '';
+  }
+
   var isUsingSourceMaps = false;
   var latestFile;
   var latestMod;
@@ -87,7 +94,7 @@ module.exports = function(file, opt) {
       joinedFile = new File(file);
     }
 
-    joinedFile.contents = concat.content;
+    joinedFile.contents = Buffer.concat([new Buffer(opt.prefix), concat.content, new Buffer(opt.suffix)]);
 
     if (concat.sourceMapping) {
       joinedFile.sourceMap = JSON.parse(concat.sourceMap);

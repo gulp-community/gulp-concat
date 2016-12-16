@@ -147,6 +147,14 @@ describe('gulp-concat', function() {
           .pipe(assert.first(function (d) { d.contents.toString().should.eql('wadapdoe'); }))
           .pipe(assert.end(done));
       })
+
+      it('should support prefix and suffix', function (done) {
+        test('wadap', 'doe')
+          .pipe(concat('test.js', {prefix: '{', suffix: '}'}))
+          .pipe(assert.length(1))
+          .pipe(assert.first(function (d) { d.contents.toString().should.eql('{wadap\ndoe}'); }))
+          .pipe(assert.end(done));
+      })
     });
 
     describe('with object as argument', function () {
