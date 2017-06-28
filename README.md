@@ -48,12 +48,12 @@ gulp.task('scripts', function() {
 });
 ```
 
-To change the newLine simply pass an object as the second argument to concat with newLine being whatever (\r\n if you want to support any OS to look at it)
+To change the newLine simply pass an object as the second argument to concat with newLine being whatever (\r\n if you want to support any OS to look at it), better use `'\n;'` for JS, because if last line of previous file is `// comment` or does not have `;`, it may throw error.
 
 For instance:
 
 ```js
-.pipe(concat('main.js', {newLine: ';'}))
+.pipe(concat('main.js', {newLine: '\n;'}))
 ```
 
 To specify `cwd`, `path` and other [vinyl](https://github.com/wearefractal/vinyl) properties, gulp-concat accepts `Object` as first argument:
