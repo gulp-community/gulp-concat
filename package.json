@@ -2,7 +2,7 @@
   "name": "gulp-concat",
   "description": "Concatenates files",
   "version": "2.6.1",
-  "repository": "contra/gulp-concat",
+  "repository": "gulp-community/gulp-concat",
   "author": "Contra <yo@contra.io> (http://contra.io/)",
   "files": [
     "index.js"
