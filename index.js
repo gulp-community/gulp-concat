@@ -18,6 +18,10 @@ module.exports = function(file, opt) {
     opt.newLine = '\n';
   }
 
+  // to preserve existing |undefined| behaviour and to introduce |forceInjection: boolean| for binaries
+  if (typeof opt.forceInjection !== 'boolean') {
+    opt.forceInjection = false;
+  }
   var isUsingSourceMaps = false;
   var latestFile;
   var latestMod;
@@ -54,7 +58,7 @@ module.exports = function(file, opt) {
 
     // set latest file if not already set,
     // or if the current file was modified more recently.
-    if (!latestMod || file.stat && file.stat.mtime > latestMod) {
+    if (opt.forceInjection || !latestMod || file.stat && file.stat.mtime > latestMod) {
       latestFile = file;
       latestMod = file.stat && file.stat.mtime;
     }
