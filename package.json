@@ -11,19 +11,19 @@
     "gulpplugin"
   ],
   "dependencies": {
-    "concat-with-sourcemaps": "^1.0.0",
-    "through2": "^2.0.0",
-    "vinyl": "^2.0.0"
+    "concat-with-sourcemaps": "^1.1.0",
+    "through2": "^3.0.1",
+    "vinyl": "^2.2.0"
   },
   "devDependencies": {
     "gulp": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "istanbul": "^0.4.5",
-    "mocha": "^3.0.0",
-    "mocha-lcov-reporter": "^1.2.0",
-    "should": "^11.0.0",
-    "stream-array": "^1.0.1",
-    "stream-assert": "^2.0.1"
+    "mocha": "^6.2.0",
+    "mocha-lcov-reporter": "^1.3.0",
+    "should": "^13.2.3",
+    "stream-array": "^1.1.2",
+    "stream-assert": "^2.0.3"
   },
   "scripts": {
     "test": "mocha",
